@@ -1,0 +1,41 @@
+expr_code: "SHREC19 Preprocessing"
+msg: "Preprocessing SHREC19"
+
+# Dataset root (contains subfolders: off/, corres/)
+shrec_root: ???
+
+# Output directory
+work_dir: ???
+
+save_processed_meshes: true # additional to the virtual scan point clouds, save the full meshes, centered and scaled
+
+# Single split, same minimal convention as FAUST
+splits:
+  train:
+    enabled: true
+
+point_clouds:
+  scan_points: 4096
+
+  centering:
+    enabled: true
+
+  scaling:
+    # mutually exclusive
+    scale_to_target_height:
+      enabled: false
+      target_height: 1.8
+      height_axis: "y"
+      eps: 1.0e-8
+    fixed_scale_factor:
+      enabled: true
+      factor: 1.25
+
+dump:
+  rnd_seed: 100
+  device: "cpu"
+
+hydra:
+  run:
+    dir: ${work_dir}/hydra_runs/${now:%Y-%m-%d--%H-%M-%S}
+  output_subdir: ".hydra"

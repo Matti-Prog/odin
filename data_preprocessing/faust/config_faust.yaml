@@ -1,0 +1,52 @@
+expr_code: "FAUST Preprocessing"
+msg: "Preprocessing FAUST dataset (registrations + scans)"
+
+# Dataset root
+faust_root: ???
+
+# Output directory
+work_dir: ???
+
+# Repo root
+project_root: ???
+
+# Which FAUST splits to process
+splits:
+  train:
+    enabled: true
+    split_dir: "training"
+  #test:
+  #  enabled: false # does not have ground truth data
+  #  split_dir: "test"
+
+# Point cloud generation
+point_clouds:
+  scan_points: 4096
+
+  # Preserve FAUST-specific filtering
+  filtering:
+    apply_scan_masks: false
+    dist_threshold_m: 0.1
+
+    mask_name:
+      reg_prefix_from: "tr_reg_"
+      reg_prefix_to: "tr_gt_"
+      reg_ext_from: ".ply"
+      reg_ext_to: ".txt"
+
+  # Centering
+  centering:
+    enabled: true
+    # Centering source: "gt_mask" (subsampled GT mask), "gt" (full GT), or "scan" (virtual scan).
+    according_to_mask: "scan"
+    subsample_mask_path: ${project_root}/assets/smpl_subsampled_indices.npy
+
+dump:
+  rnd_seed: 100
+  device: "auto"      # auto / cpu / cuda
+  chunk_size: 1024    # for chunked NN queries if needed later (kept for parity; currently unused)
+
+hydra:
+  run:
+    dir: ${work_dir}/hydra_runs/${now:%Y-%m-%d--%H-%M-%S}
+  output_subdir: ".hydra"

@@ -1,0 +1,80 @@
+expr_code: "AMASS Preprocessing"
+msg: "Preprocessing AMASS dataset"
+
+# Dataset root
+amass_dir: ???
+
+# Output directory
+work_dir: ???
+
+# Repo root
+project_root: ???
+
+# Dataset split
+amass_splits:
+  "train": ["ACCAD", "BioMotionLab_NTroje", "BMLhandball", "BMLmovi", "CMU", "DanceDB", "EKUT", "Eyes_Japan_Dataset", "GRAB", "HUMAN4D", "HumanEva", "KIT", "MPI_HDM05", "MPI_Limits", "MPI_mosh", "SFU", "SOMA", "SSM_synced", "TCD_handMocap", "TotalCapture", "Transitions_mocap"]
+  "vald": ["GRAB"]
+  "test": ["DFaust_67"]
+
+# Main split toggles
+splits:
+  train: true
+  vald: true
+  test: true
+
+# Point cloud saving:
+# Save point clouds for a given split iff:
+#   splits.<split> == true AND point_clouds.splits.<split> == true
+# Produce a GT point cloud (SMPL vertices) and a virtual scan point cloud for each sample
+point_clouds:
+  splits:
+    train: false
+    vald: false
+    test: true
+
+  # Centering source: "gt_mask" (subsampled GT mask), "gt" (full GT), or "scan" (virtual scan).
+  centering_according_to_mask: "scan" # kept legacy variable name
+
+  # helper files needed for part segmentation, centering
+  masks:
+    smpl_vert_segmentation_json: ${project_root}/assets/smpl_vert_segmentation.json
+    subsample_mask_path: ${project_root}/assets/smpl_subsampled_indices.npy
+
+  # per-split point cloud augmentation, applied to the virtual scans (for saved point cloud)
+  augment:
+    train:
+      augment_limbs_prob: 0.0 # probability of removing one random outer limb
+      augment_partial_views_prob: 0.0 # probability of rendering point cloud from a single view point around the height axis
+      add_noise: true # simulate sensor noise
+      noise_std: 0.0025
+    vald:
+      augment_limbs_prob: 0.0
+      augment_partial_views_prob: 0.0
+      add_noise: true
+      noise_std: 0.0025
+    test:
+      augment_limbs_prob: 0.0
+      augment_partial_views_prob: 0.0
+      add_noise: true
+      noise_std: 0.0025
+
+dump:
+  rnd_seed: 100
+  keep_rate: 0.01 # downsample AMASS frames according to this factor
+  chunk_size: 1024 # for performance reasons
+  scan_points: 4096 # point number for the virtual scan point clouds
+  device: "auto"   # auto / cpu / cuda
+
+  # used by missing-limbs segmentation / chunked cdist
+  missing_parts_chunk_size: 1024 # for performance reasons
+
+  # SMPL / SMPLH
+  smpl_model_path: ${project_root}/support_data/body_models
+  model_type: "smplh"
+  num_betas: 16
+  batch_size_smpl: 16
+
+hydra:
+  run:
+    dir: ${work_dir}/hydra_runs/${now:%Y-%m-%d--%H-%M-%S}
+  output_subdir: ".hydra"

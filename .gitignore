@@ -1,0 +1,22 @@
+/assets/vposer/
+/support_data/body_models/
+outputs/
+wandb/
+
+# python runtime and tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.coverage*
+htmlcov/
+
+# local environments
+.env
+.venv/
+env/
+
+# editors and operating systems
+.idea/
+.vscode/
+.DS_Store

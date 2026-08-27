@@ -1,0 +1,240 @@
+expr_code: "DFAUST Preprocessing"
+msg: "Preprocessing DFAUST dataset (registrations + scans)"
+
+# Dataset root
+dfaust_root: ???
+
+# Output directory
+work_dir: ???
+
+# Repo root
+project_root: ???
+
+# Files needed for DFAUST-specific processing
+registrations:
+  male: "registrations_m.hdf5"
+  female: "registrations_f.hdf5"
+
+scans_dir: "scans"
+masks_dir: "masks"
+
+# Process all subjects in DFAUST
+subjects:
+  - "50002"
+  - "50004"
+  - "50007"
+  - "50009"
+  - "50020"
+  - "50021"
+  - "50022"
+  - "50025"
+  - "50026"
+  - "50027"
+
+# Exclude defective frames
+exclude_frames:
+  - "50022_one_leg_jump_220"
+  - "50022_punching_2616"
+  - "50022_running_on_spot_627"
+
+# DFAUST split sourced from https://github.com/xuchen-ethz/snarf/blob/main/lib/dataset/dfaust_split.yml
+dataset_split:
+  "50002":
+    test:
+      - chicken_wings
+    train:
+      - hips
+      - jiggle_on_toes
+      - jumping_jacks
+      - knees
+      - light_hopping_loose
+      - light_hopping_stiff
+      - one_leg_jump
+      - one_leg_loose
+      - punching
+    val:
+      - chicken_wings
+
+  "50004":
+    test:
+      - hips
+    train:
+      - chicken_wings
+      - jiggle_on_toes
+      - jumping_jacks
+      - knees
+      - light_hopping_loose
+      - light_hopping_stiff
+      - one_leg_jump
+      - one_leg_loose
+      - punching
+    val:
+      - hips
+
+  "50007":
+    test:
+      - jiggle_on_toes
+    train:
+      - chicken_wings
+      - jumping_jacks
+      - knees
+      - light_hopping_loose
+      - light_hopping_stiff
+      - one_leg_jump
+      - one_leg_loose
+      - punching
+      - running_on_spot
+    val:
+      - jiggle_on_toes
+
+  "50009":
+    test:
+      - jumping_jacks
+    train:
+      - chicken_wings
+      - hips
+      - jiggle_on_toes
+      - light_hopping_loose
+      - light_hopping_stiff
+      - one_leg_jump
+      - one_leg_loose
+      - punching
+      - running_on_spot
+    val:
+      - jumping_jacks
+
+  "50020":
+    test:
+      - knees
+    train:
+      - chicken_wings
+      - hips
+      - jiggle_on_toes
+      - light_hopping_loose
+      - light_hopping_stiff
+      - one_leg_jump
+      - one_leg_loose
+      - punching
+      - running_on_spot
+    val:
+      - knees
+
+  "50021":
+    test:
+      - light_hopping_stiff
+    train:
+      - chicken_wings
+      - hips
+      - knees
+      - one_leg_jump
+      - one_leg_loose
+      - punching
+      - running_on_spot
+      - shake_arms
+      - shake_hips
+    val:
+      - light_hopping_stiff
+
+  "50022":
+    test:
+      - light_hopping_loose
+    train:
+      - hips
+      - jiggle_on_toes
+      - jumping_jacks
+      - knees
+      - light_hopping_stiff
+      - one_leg_jump
+      - one_leg_loose
+      - punching
+      - running_on_spot
+    val:
+      - light_hopping_loose
+
+  "50025":
+    test:
+      - one_leg_jump
+    train:
+      - chicken_wings
+      - hips
+      - jiggle_on_toes
+      - knees
+      - light_hopping_loose
+      - light_hopping_stiff
+      - one_leg_loose
+      - punching
+      - running_on_spot
+    val:
+      - one_leg_jump
+
+  "50026":
+    test:
+      - one_leg_loose
+    train:
+      - chicken_wings
+      - hips
+      - jiggle_on_toes
+      - jumping_jacks
+      - knees
+      - light_hopping_loose
+      - light_hopping_stiff
+      - one_leg_jump
+      - punching
+    val:
+      - one_leg_loose
+
+  "50027":
+    test:
+      - punching
+    train:
+      - hips
+      - jiggle_on_toes
+      - jumping_jacks
+      - knees
+      - light_hopping_loose
+      - light_hopping_stiff
+      - one_leg_jump
+      - one_leg_loose
+      - running_on_spot
+    val:
+      - punching
+
+# Which split(s) to dump
+splits:
+  train:
+    enabled: true
+  val:
+    enabled: true
+  test:
+    enabled: true
+
+point_clouds:
+  scan_points: 4096
+
+  frame_selection:
+    frame_interval: 5
+    middle_crop: 0.5
+
+  filtering:
+    apply_scan_masks: false
+    dist_threshold_m: 0.1
+
+  # first step sampling from scan surface, later select number of scan_points (4096) via farthest points sampling
+  sampling:
+    surface_samples: 50000
+
+  centering:
+    enabled: true
+    # Centering source: "gt_mask" (subsampled GT mask), "gt" (full GT), or "scan" (virtual scan).
+    according_to_mask: "scan"
+    subsample_mask_path: ${project_root}/assets/smpl_subsampled_indices.npy
+
+dump:
+  rnd_seed: 100
+  device: "auto"   # auto / cpu / cuda
+  chunk_size: 1024 # kept for convention parity; currently unused
+
+hydra:
+  run:
+    dir: ${work_dir}/hydra_runs/${now:%Y-%m-%d--%H-%M-%S}
+  output_subdir: ".hydra"
