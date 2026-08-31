@@ -13,6 +13,8 @@
   <a href="https://riccardomarin.github.io"><b>Riccardo Marin</b></a>
 </p>
 
+![ODin demo](assets/method_animation.gif)
+
 Code for *Ordered Diffusion for 3D Human Registration*, accepted at GCPR 2026 (Oral). [[arXiv](https://arxiv.org/abs/2608.05804v1)] [[Project Page](https://riccardomarin.github.io/odin/)]
 
 ## Installation
